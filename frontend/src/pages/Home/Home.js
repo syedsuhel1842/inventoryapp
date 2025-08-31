@@ -1,5 +1,5 @@
 import React from "react";
-import { RiProductHuntLine } from "react-icons/ri";
+import { RiProductHuntLine, RiArrowRightLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import "./Home.scss";
 import heroImg from "../../assets/inv-img.png";
@@ -8,68 +8,72 @@ import { ShowOnLogin, ShowOnLogout } from "../../components/protect/HiddenLink";
 const Home = () => {
   return (
     <div className="home">
-      <nav className="container --flex-between ">
+      <nav className="nav-container">
         <div className="logo">
-          <RiProductHuntLine size={35} />
+          <RiProductHuntLine size={32} />
+          <span>InventoryPro</span>
         </div>
 
-        <ul className="home-links">
+        <ul className="nav-links">
           <ShowOnLogout>
-            <li>
-              <Link to="/register">Register</Link>
+            <li className="nav-item">
+              <Link to="/register" className="nav-link">Register</Link>
             </li>
           </ShowOnLogout>
           <ShowOnLogout>
-            <li>
-              <button className="--btn --btn-primary">
-                <Link to="/login">Login</Link>
-              </button>
+            <li className="nav-item">
+              <Link to="/login" className="nav-btn primary">Login</Link>
             </li>
           </ShowOnLogout>
           <ShowOnLogin>
-            <li>
-              <button className="--btn --btn-primary">
-                <Link to="/dashboard">Dashboard</Link>
-              </button>
+            <li className="nav-item">
+              <Link to="/dashboard" className="nav-btn primary">Go to Dashboard</Link>
             </li>
           </ShowOnLogin>
         </ul>
       </nav>
-      {/* HERO SECTION */}
-      <section className="container hero">
-        <div className="hero-text">
-          <h2>Inventory {"&"} Stock Management Solution</h2>
-          <p>
-            Inventory system to control and manage proucts in the warehouse in
-            real timeand integrated to make it easier to develop your business.
+
+      <main className="hero">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Smart Inventory <span className="highlight">Management</span> Solution
+          </h1>
+          <p className="hero-description">
+            Streamline your warehouse operations with our real-time inventory 
+            management system. Perfect for businesses of all sizes.
           </p>
-          <div className="hero-buttons">
-            <button className="--btn --btn-secondary">
-              <Link to="/dashboard">Free Trial 1 Month</Link>
-            </button>
+          
+          <div className="cta-buttons">
+            <Link to="/dashboard" className="btn primary">
+              Start Free Trial <RiArrowRightLine className="btn-icon" />
+            </Link>
+            <Link to="/register" className="btn secondary">
+              Learn More
+            </Link>
           </div>
-          <div className="--flex-start">
-            <NumberText num="14K" text="Brand Owners" />
-            <NumberText num="23K" text="Active Users" />
-            <NumberText num="500+" text="Partners" />
+
+          <div className="stats-container">
+            <StatItem number="14K+" label="Brand Owners" />
+            <StatItem number="23K+" label="Active Users" />
+            <StatItem number="500+" label="Partners" />
           </div>
         </div>
 
         <div className="hero-image">
-          <img src={heroImg} alt="Inventory" />
+          <div className="image-wrapper">
+            <img src={heroImg} alt="Inventory Management Dashboard" />
+          </div>
         </div>
-      </section>
+      </main>
     </div>
   );
 };
 
-const NumberText = ({ num, text }) => {
-  return (
-    <div className="--mr">
-      <h3 className="--color-white">{num}</h3>
-      <p className="--color-white">{text}</p>
-    </div>
-  );
-};
+const StatItem = ({ number, label }) => (
+  <div className="stat-item">
+    <span className="stat-number">{number}</span>
+    <span className="stat-label">{label}</span>
+  </div>
+);
 
 export default Home;

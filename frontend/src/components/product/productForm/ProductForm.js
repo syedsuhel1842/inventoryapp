@@ -7,84 +7,82 @@ import "./ProductForm.scss";
 
 const ProductForm = ({
   product,
-  productImage,
-  imagePreview,
   description,
   setDescription,
   handleInputChange,
-  handleImageChange,
   saveProduct,
 }) => {
   return (
     <div className="add-product">
       <Card cardClass={"card"}>
         <form onSubmit={saveProduct}>
-          {/* <Card cardClass={"group"}>
-            <label>Product Image</label>
-            <code className="--color-dark">
-              Supported Formats: jpg, jpeg, png
-            </code>
+          <div className="form-group">
+            <label>Product Name:</label>
             <input
-              type="file"
-              name="image"
-              onChange={(e) => handleImageChange(e)}
+              type="text"
+              placeholder="Enter product name"
+              name="name"
+              value={product?.name || ''}
+              onChange={handleInputChange}
+              required
             />
+          </div>
 
-            {imagePreview != null ? (
-              <div className="image-preview">
-                <img src={imagePreview} alt="product" />
-              </div>
-            ) : (
-              <p>No image set for this poduct.</p>
-            )}
-          </Card> */}
-          <label>Product Name:</label>
-          <input
-            type="text"
-            placeholder="Product name"
-            name="name"
-            value={product?.name}
-            onChange={handleInputChange}
-          />
+          <div className="form-group">
+            <label>Product Category:</label>
+            <input
+              type="text"
+              placeholder="e.g., Electronics, Clothing"
+              name="category"
+              value={product?.category || ''}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
 
-          <label>Product Category:</label>
-          <input
-            type="text"
-            placeholder="Product Category"
-            name="category"
-            value={product?.category}
-            onChange={handleInputChange}
-          />
+          <div className="form-group">
+            <label>Product Price ($):</label>
+            <input
+              type="number"
+              placeholder="0.00"
+              name="price"
+              min="0"
+              step="0.01"
+              value={product?.price || ''}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
 
-          <label>Product Price:</label>
-          <input
-            type="text"
-            placeholder="Product Price"
-            name="price"
-            value={product?.price}
-            onChange={handleInputChange}
-          />
+          <div className="form-group">
+            <label>Product Quantity:</label>
+            <input
+              type="number"
+              placeholder="0"
+              name="quantity"
+              min="0"
+              value={product?.quantity || ''}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
 
-          <label>Product Quantity:</label>
-          <input
-            type="text"
-            placeholder="Product Quantity"
-            name="quantity"
-            value={product?.quantity}
-            onChange={handleInputChange}
-          />
+<div className="form-group">
+            <label>Product Description:</label>
+            <div className="quill-wrapper">
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={setDescription}
+                modules={ProductForm.modules}
+                formats={ProductForm.formats}
+                placeholder="Enter detailed product description..."
+              />
+            </div>
+          </div>
 
-          <label>Product Description:</label>
-          <ReactQuill
-            theme="snow"
-            value={description}
-            onChange={setDescription}
-            modules={ProductForm.modules}
-            formats={ProductForm.formats}
-          />
-
-          <div className="--my">
-            <button type="submit" className="--btn --btn-primary">
+          <div className="form-group">
+            <button type="submit" className="--btn --btn-primary --btn-block">
               Save Product
             </button>
           </div>
@@ -110,6 +108,7 @@ ProductForm.modules = {
     ["clean"],
   ],
 };
+
 ProductForm.formats = [
   "header",
   "font",
@@ -122,12 +121,7 @@ ProductForm.formats = [
   "color",
   "background",
   "list",
-  "bullet",
   "indent",
-  "link",
-  "video",
-  "image",
-  "code-block",
   "align",
 ];
 

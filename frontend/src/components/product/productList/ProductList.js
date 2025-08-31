@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { SpinnerImg } from "../../loader/Loader";
-import "./productList.scss";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import { AiOutlineEye } from "react-icons/ai";
-import Search from "../../search/Search";
+import { FaEdit, FaTrashAlt, FaSearch, FaEye } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import styles from "./productList.module.scss";
 import {
   FILTER_PRODUCTS,
   selectFilteredPoducts,
 } from "../../../redux/features/product/filterSlice";
-import ReactPaginate from "react-paginate";
-import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css";
 import {
   deleteProduct,
   getProducts,
 } from "../../../redux/features/product/productSlice";
-import { Link } from "react-router-dom";
 
-const ProductList = ({ products, isLoading }) => {
+const ProductList = ({ products = [], isLoading = false }) => {
   const [search, setSearch] = useState("");
   const filteredProducts = useSelector(selectFilteredPoducts);
 
@@ -79,98 +75,152 @@ const ProductList = ({ products, isLoading }) => {
   }, [products, search, dispatch]);
 
   return (
-    <div className="product-list">
-      <hr />
-      <div className="table">
-        <div className="--flex-between --flex-dir-column">
-          <span>
-            <h3>Inventory Items</h3>
-          </span>
-          <span>
-            <Search
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </span>
+    <div className={styles['product-list-container']}>
+      <div className={styles['product-list-header']}>
+        <h3>Inventory Items</h3>
+        <div className={styles['search-box']}>
+          <FaSearch className={styles['search-icon']} />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles['search-input']}
+          />
         </div>
+      </div>
 
-        {isLoading && <SpinnerImg />}
-
-        <div className="table">
-          {!isLoading && products.length === 0 ? (
-            <p>-- No product found, please add a product...</p>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>s/n</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Value</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {currentItems.map((product, index) => {
-                  const { _id, name, category, price, quantity } = product;
+      {isLoading ? (
+        <div className={styles['loading-state']}>
+          <div className={styles.spinner}></div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className={styles['empty-state']}>
+          <p>No products found. Add your first product to get started.</p>
+        </div>
+      ) : (
+        <div className={styles['product-list']}>
+          <div className={styles['table-header']}>
+            <div className={styles.row}>
+              <div className={styles.cell}>Name</div>
+              <div className={styles.cell}>Category</div>
+              <div className={styles.cell}>Price</div>
+              <div className={styles.cell}>Quantity</div>
+              <div className={styles.cell}>Value</div>
+              <div className={`${styles.cell} ${styles.actions}`}>Actions</div>
+            </div>
+          </div>
+          
+          <div className={styles['table-body']}>
+            {currentItems.map((product) => {
+              const { _id, name, category, price, quantity, image } = product;
+              const productValue = (price * quantity).toFixed(2);
+              
+              return (
+                <div className={styles['table-row']} key={_id} data-id={_id}>
+                  <div className={styles.cell} data-label="Name">
+                    <div className={styles['product-info']}>
+                      {image?.url ? (
+                        <img 
+                          src={image.url} 
+                          alt={name} 
+                          className={styles['product-image']}
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/40';
+                          }}
+                        />
+                      ) : (
+                        <div className={styles['product-image-placeholder']}>
+                          {name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className={styles['product-name']}>{name}</span>
+                    </div>
+                  </div>
+                  <div className={styles.cell} data-label="Category">
+                    <span className={styles['category-badge']}>{category}</span>
+                  </div>
+                  <div className={styles.cell} data-label="Price">
+                    ${parseFloat(price).toFixed(2)}
+                  </div>
+                  <div className={`${styles.cell} ${quantity <= 10 ? styles['low-stock'] : ''}`} data-label="Quantity">
+                    {quantity} {quantity <= 10 && <span className={styles['stock-warning']}>Low</span>}
+                  </div>
+                  <div className={styles.cell} data-label="Value">
+                    ${productValue}
+                  </div>
+                  <div className={`${styles.cell} ${styles.actions}`} data-label="Actions">
+                    <div className={styles['action-buttons']}>
+                      <Link 
+                        to={`/product-detail/${_id}`} 
+                        className={`${styles['action-btn']} ${styles.view}`}
+                        title="View details"
+                      >
+                        <FaEye />
+                      </Link>
+                      <Link 
+                        to={`/edit-product/${_id}`} 
+                        className={`${styles['action-btn']} ${styles.edit}`}
+                        title="Edit product"
+                      >
+                        <FaEdit />
+                      </Link>
+                      <button 
+                        onClick={() => confirmDelete(_id)}
+                        className={`${styles['action-btn']} ${styles.delete}`}
+                        title="Delete product"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {pageCount > 1 && (
+            <div className={styles['pagination-container']}>
+              <button 
+                onClick={() => handlePageClick({ selected: Math.max(0, (itemOffset / itemsPerPage) - 1) })}
+                disabled={itemOffset === 0}
+                className={`${styles['pagination-button']} ${styles.prev}`}
+              >
+                Previous
+              </button>
+              
+              <div className={styles['page-numbers']}>
+                {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
+                  const page = Math.max(0, Math.min(pageCount - 5, Math.floor(itemOffset / itemsPerPage) - 2)) + i;
+                  if (page < 0 || page >= pageCount) return null;
+                  
                   return (
-                    <tr key={_id}>
-                      <td>{index + 1}</td>
-                      <td>{shortenText(name, 16)}</td>
-                      <td>{category}</td>
-                      <td>
-                        {"$"}
-                        {price}
-                      </td>
-                      <td>{quantity}</td>
-                      <td>
-                        {"$"}
-                        {price * quantity}
-                      </td>
-                      <td className="icons">
-                        <span>
-                          <Link to={`/product-detail/${_id}`}>
-                            <AiOutlineEye size={25} color={"purple"} />
-                          </Link>
-                        </span>
-                        <span>
-                          <Link to={`/edit-product/${_id}`}>
-                            <FaEdit size={20} color={"green"} />
-                          </Link>
-                        </span>
-                        <span>
-                          <FaTrashAlt
-                            size={20}
-                            color={"red"}
-                            onClick={() => confirmDelete(_id)}
-                          />
-                        </span>
-                      </td>
-                    </tr>
+                    <button
+                      key={page}
+                      onClick={() => handlePageClick({ selected: page })}
+                      className={`${styles['page-number']} ${itemOffset === page * itemsPerPage ? styles.active : ''}`}
+                    >
+                      {page + 1}
+                    </button>
                   );
                 })}
-              </tbody>
-            </table>
+                
+                {pageCount > 5 && (
+                  <span className={styles['page-ellipsis']}>...</span>
+                )}
+              </div>
+              
+              <button 
+                onClick={() => handlePageClick({ selected: (itemOffset / itemsPerPage) + 1 })}
+                disabled={itemOffset + itemsPerPage >= filteredProducts.length}
+                className={`${styles['pagination-button']} ${styles.next}`}
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="Next"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
-          pageCount={pageCount}
-          previousLabel="Prev"
-          renderOnZeroPageCount={null}
-          containerClassName="pagination"
-          pageLinkClassName="page-num"
-          previousLinkClassName="page-num"
-          nextLinkClassName="page-num"
-          activeLinkClassName="activePage"
-        />
-      </div>
+      )}
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import styles from "./auth.module.scss";
 import { TiUserAddOutline } from "react-icons/ti";
-import Card from "../../components/card/Card";
+import { BiArrowBack } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { registerUser, validateEmail } from "../../services/authService";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { SET_LOGIN, SET_NAME } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loader/Loader";
+import "./Auth.scss";
 
 const initialState = {
   name: "",
@@ -62,60 +62,83 @@ const Register = () => {
   };
 
   return (
-    <div className={`container ${styles.auth}`}>
+    <div className="auth-page">
       {isLoading && <Loader />}
-      <Card>
-        <div className={styles.form}>
-          <div className="--flex-center">
-            <TiUserAddOutline size={35} color="#999" />
+      <div className="auth-container">
+        <div className="auth-header">
+          <Link to="/" className="back-button">
+            <BiArrowBack size={20} /> Back to Home
+          </Link>
+          <div className="logo">
+            <TiUserAddOutline size={32} />
+            <h1>Create Account</h1>
           </div>
-          <h2>Register</h2>
+          <p className="subtitle">Fill in your details to get started</p>
+        </div>
 
-          <form onSubmit={register}>
+        <form onSubmit={register} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="name">Full Name</label>
             <input
               type="text"
-              placeholder="Name"
-              required
+              id="name"
               name="name"
               value={name}
               onChange={handleInputChange}
+              placeholder="Enter your full name"
+              required
             />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
-              placeholder="Email"
-              required
+              id="email"
               name="email"
               value={email}
               onChange={handleInputChange}
+              placeholder="Enter your email"
+              required
             />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
               type="password"
-              placeholder="Password"
-              required
+              id="password"
               name="password"
               value={password}
               onChange={handleInputChange}
+              placeholder="••••••••"
+              required
             />
+            <p className="password-hint">Password must be at least 6 characters</p>
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password2">Confirm Password</label>
             <input
               type="password"
-              placeholder="Confirm Password"
-              required
+              id="password2"
               name="password2"
               value={password2}
               onChange={handleInputChange}
+              placeholder="••••••••"
+              required
             />
-            <button type="submit" className="--btn --btn-primary --btn-block">
-              Register
-            </button>
-          </form>
+          </div>
 
-          <span className={styles.register}>
-            <Link to="/">Home</Link>
-            <p> &nbsp; Already have an account? &nbsp;</p>
-            <Link to="/login">Login</Link>
-          </span>
-        </div>
-      </Card>
+          <button type="submit" className="auth-button primary">
+            Create Account
+          </button>
+
+          <div className="auth-footer">
+            <p>Already have an account? <Link to="/">Sign in</Link></p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

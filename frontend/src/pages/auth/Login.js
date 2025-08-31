@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import styles from "./auth.module.scss";
-import { BiLogIn } from "react-icons/bi";
-import Card from "../../components/card/Card";
+import { BiLogIn, BiArrowBack } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { loginUser, validateEmail } from "../../services/authService";
 import { SET_LOGIN, SET_NAME } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loader/Loader";
+import "./Auth.scss";
 
 const initialState = {
   email: "",
@@ -55,45 +54,61 @@ const Login = () => {
   };
 
   return (
-    <div className={`container ${styles.auth}`}>
+    <div className="auth-page">
       {isLoading && <Loader />}
-      <Card>
-        <div className={styles.form}>
-          <div className="--flex-center">
-            <BiLogIn size={35} color="#999" />
+      <div className="auth-container">
+        <div className="auth-header">
+          <Link to="/" className="back-button">
+            <BiArrowBack size={20} /> Back to Home
+          </Link>
+          <div className="logo">
+            <BiLogIn size={32} />
+            <h1>Welcome Back</h1>
           </div>
-          <h2>Login</h2>
+          <p className="subtitle">Sign in to access your account</p>
+        </div>
 
-          <form onSubmit={login}>
+        <form onSubmit={login} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
-              placeholder="Email"
-              required
+              id="email"
               name="email"
               value={email}
               onChange={handleInputChange}
+              placeholder="Enter your email"
+              required
             />
+          </div>
+          
+          <div className="form-group">
+            <div className="form-header">
+              <label htmlFor="password">Password</label>
+              <Link to="/forgot" className="forgot-password">
+                Forgot Password?
+              </Link>
+            </div>
             <input
               type="password"
-              placeholder="Password"
-              required
+              id="password"
               name="password"
               value={password}
               onChange={handleInputChange}
+              placeholder="••••••••"
+              required
             />
-            <button type="submit" className="--btn --btn-primary --btn-block">
-              Login
-            </button>
-          </form>
-          <Link to="/forgot">Forgot Password</Link>
+          </div>
 
-          <span className={styles.register}>
-            <Link to="/">Home</Link>
-            <p> &nbsp; Don't have an account? &nbsp;</p>
-            <Link to="/register">Register</Link>
-          </span>
-        </div>
-      </Card>
+          <button type="submit" className="auth-button primary">
+            Sign In
+          </button>
+
+          <div className="auth-footer">
+            <p>Don't have an account? <Link to="/register">Sign up</Link></p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
